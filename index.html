@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مِفتاح — معلم الطباعة العربية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0e2a2f;
+  --ink-2:#123840;
+  --parchment:#efe6d3;
+  --parchment-2:#e4d8bd;
+  --gold:#c8992a;
+  --gold-bright:#e6b84a;
+  --rust:#a1442a;
+  --sage:#5f8f78;
+  --muted:#8fa79f;
+  --white:#fbf7ec;
+  font-size:16px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(200,153,42,0.08), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(200,153,42,0.06), transparent 45%),
+    var(--ink);
+  color:var(--parchment);
+  font-family:'Cairo', sans-serif;
+  overflow-x:hidden;
+}
+.bg-pattern{
+  position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.05;
+  background-image:
+    linear-gradient(45deg, var(--gold) 1px, transparent 1px),
+    linear-gradient(-45deg, var(--gold) 1px, transparent 1px);
+  background-size:38px 38px;
+}
+.app{position:relative; z-index:1; max-width:980px; margin:0 auto; padding:28px 24px 60px;}
+
+/* ---------- Header ---------- */
+header.top{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:28px; padding-bottom:18px;
+  border-bottom:1px solid rgba(200,153,42,0.25);
+}
+.brand{display:flex; align-items:center; gap:14px;}
+.brand-mark{
+  width:44px; height:44px; border:2px solid var(--gold);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-family:'Amiri', serif; font-size:22px; color:var(--gold-bright); transform:rotate(45deg);
+}
+.brand-mark span{transform:rotate(-45deg);}
+.brand-text h1{font-family:'Amiri', serif; font-size:1.7rem; margin:0; color:var(--white); letter-spacing:1px;}
+.brand-text p{margin:2px 0 0; font-size:0.8rem; color:var(--muted); letter-spacing:2px; font-family:'JetBrains Mono', monospace;}
+.stat-pill{
+  font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:var(--gold-bright);
+  border:1px solid rgba(200,153,42,0.4); border-radius:20px; padding:6px 14px;
+  background:rgba(200,153,42,0.06);
+}
+
+/* ---------- Views ---------- */
+.view{display:none; animation:fadein .35s ease;}
+.view.active{display:block;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+/* ---------- Home / Levels ---------- */
+.hero{
+  display:flex; align-items:center; gap:26px; margin-bottom:34px;
+  padding:22px 26px; border:1px solid rgba(200,153,42,0.2); border-radius:18px;
+  background:linear-gradient(135deg, rgba(200,153,42,0.07), rgba(255,255,255,0.02));
+}
+.hero-glyph{font-family:'Amiri', serif; font-size:3.4rem; color:var(--gold); line-height:1;}
+.hero-text h2{margin:0 0 6px; font-family:'Amiri', serif; font-size:1.5rem; color:var(--white);}
+.hero-text p{margin:0; color:var(--muted); font-size:0.95rem; line-height:1.7;}
+
+.levels-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(270px,1fr)); gap:16px;}
+.level-card{
+  border:1px solid rgba(200,153,42,0.22); border-radius:14px; padding:18px 20px;
+  background:rgba(255,255,255,0.02); cursor:pointer; transition:.25s;
+  position:relative; overflow:hidden;
+}
+.level-card:hover{border-color:var(--gold); transform:translateY(-2px); background:rgba(200,153,42,0.06);}
+.level-card.locked{opacity:0.4; cursor:not-allowed;}
+.level-card.locked:hover{transform:none; border-color:rgba(200,153,42,0.22);}
+.level-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+.level-glyph{font-family:'Amiri', serif; color:var(--gold-bright); font-size:1.6rem;}
+.level-name{font-weight:800; color:var(--white); font-size:1.05rem;}
+.level-sub{color:var(--muted); font-size:0.82rem; margin-bottom:12px; line-height:1.5;}
+.level-keys{font-family:'Amiri', serif; direction:rtl; font-size:1.3rem; color:var(--parchment-2); letter-spacing:6px;}
+.level-best{position:absolute; top:14px; left:16px; font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--sage);}
+
+/* ---------- Practice screen ---------- */
+.practice-bar{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;}
+.back-btn{
+  background:none; border:1px solid rgba(200,153,42,0.35); color:var(--parchment-2);
+  border-radius:8px; padding:8px 16px; font-family:'Cairo'; cursor:pointer; font-size:0.85rem;
+}
+.back-btn:hover{border-color:var(--gold);}
+.lesson-title{font-family:'Amiri', serif; font-size:1.3rem; color:var(--white);}
+
+.metrics{display:flex; gap:14px; margin-bottom:20px;}
+.metric{
+  flex:1; text-align:center; border:1px solid rgba(200,153,42,0.2); border-radius:12px;
+  padding:12px 8px; background:rgba(255,255,255,0.02);
+}
+.metric b{display:block; font-family:'JetBrains Mono',monospace; font-size:1.5rem; color:var(--gold-bright);}
+.metric span{font-size:0.72rem; color:var(--muted); letter-spacing:1px;}
+
+.progress-track{height:6px; border-radius:4px; background:rgba(255,255,255,0.06); margin-bottom:22px; overflow:hidden;}
+.progress-fill{height:100%; background:linear-gradient(90deg, var(--sage), var(--gold)); width:0%; transition:width .15s;}
+
+.text-display{
+  direction:rtl; font-family:'Amiri', serif; font-size:2.1rem; line-height:2.4;
+  padding:30px 34px; border-radius:16px; background:rgba(255,255,255,0.03);
+  border:1px solid rgba(200,153,42,0.18); margin-bottom:22px; min-height:130px;
+  letter-spacing:1px;
+}
+.ch{position:relative; transition:color .1s;}
+.ch.pending{color:var(--muted);}
+.ch.correct{color:var(--sage);}
+.ch.wrong{color:var(--rust); text-decoration:underline wavy var(--rust);}
+.ch.current{color:var(--white); border-bottom:3px solid var(--gold-bright); }
+
+.hidden-input{position:absolute; opacity:0; pointer-events:none;}
+
+/* ---------- Keyboard ---------- */
+.keyboard{
+  border:1px solid rgba(200,153,42,0.2); border-radius:16px; padding:20px;
+  background:rgba(0,0,0,0.15); margin-bottom:10px;
+}
+.kb-row{display:flex; gap:6px; margin-bottom:6px; justify-content:center;}
+.key{
+  min-width:42px; height:42px; border-radius:8px; background:rgba(255,255,255,0.04);
+  border:1px solid rgba(200,153,42,0.18); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; font-family:'Amiri', serif; font-size:1.05rem;
+  color:var(--parchment-2); position:relative; transition:.1s;
+}
+.key small{font-family:'JetBrains Mono',monospace; font-size:0.55rem; color:var(--muted); position:absolute; bottom:2px; left:4px;}
+.key.wide{min-width:230px;}
+.key.next{background:var(--gold); color:var(--ink); border-color:var(--gold-bright); box-shadow:0 0 14px rgba(200,153,42,0.5);}
+.key.next small{color:var(--ink);}
+.key.pressed{transform:scale(0.92); background:var(--sage); color:var(--ink);}
+
+.hand-tip{text-align:center; color:var(--muted); font-size:0.8rem; margin-top:6px;}
+
+/* ---------- Finger coloring ---------- */
+.key[data-finger="pinky"]{border-top:2px solid #c8992a;}
+.key[data-finger="ring"]{border-top:2px solid #a1442a;}
+.key[data-finger="middle"]{border-top:2px solid #5f8f78;}
+.key[data-finger="index"]{border-top:2px solid #4a90a4;}
+.finger-legend{display:flex; justify-content:center; gap:22px; margin:12px 0 4px; flex-wrap:wrap;}
+.finger-legend .item{display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--muted);}
+.finger-legend .dot{width:10px; height:10px; border-radius:3px;}
+.finger-hint{
+  text-align:center; font-size:0.9rem; color:var(--gold-bright); margin-bottom:16px;
+  padding:10px 16px; border:1px dashed rgba(200,153,42,0.35); border-radius:10px;
+  background:rgba(200,153,42,0.05);
+}
+
+/* ---------- Results ---------- */
+.results{text-align:center; padding:40px 20px;}
+.results .glyph{font-family:'Amiri', serif; font-size:3rem; color:var(--gold); margin-bottom:6px;}
+.results h2{font-family:'Amiri', serif; color:var(--white); margin:0 0 24px;}
+.result-grid{display:flex; gap:18px; justify-content:center; margin-bottom:30px; flex-wrap:wrap;}
+.result-grid .metric{min-width:130px; flex:none;}
+.actions{display:flex; gap:12px; justify-content:center;}
+.btn{
+  font-family:'Cairo'; font-weight:600; padding:12px 26px; border-radius:10px; border:none;
+  cursor:pointer; font-size:0.95rem; transition:.2s;
+}
+.btn.primary{background:var(--gold); color:var(--ink);}
+.btn.primary:hover{background:var(--gold-bright);}
+.btn.ghost{background:transparent; border:1px solid rgba(200,153,42,0.35); color:var(--parchment-2);}
+.btn.ghost:hover{border-color:var(--gold);}
+
+.divider{
+  text-align:center; color:var(--gold); opacity:0.5; margin:26px 0; font-size:1.1rem; letter-spacing:14px;
+}
+footer{text-align:center; color:var(--muted); font-size:0.75rem; margin-top:30px; font-family:'JetBrains Mono',monospace;}
+
+@media(max-width:640px){
+  .text-display{font-size:1.5rem; padding:20px;}
+  .key{min-width:28px; height:34px; font-size:0.85rem;}
+  .key.wide{min-width:120px;}
+}
+</style>
+</head>
+<body>
+<div class="bg-pattern"></div>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark"><span>م</span></div>
+      <div class="brand-text">
+        <h1>مِفتاح</h1>
+        <p>ARABIC TYPING TUTOR</p>
+      </div>
+    </div>
+    <div class="stat-pill" id="sessionPill">جلسة اليوم: 0 دقيقة</div>
+  </header>
+
+  <!-- HOME VIEW -->
+  <div class="view active" id="view-home">
+    <div class="hero">
+      <div class="hero-glyph">ط</div>
+      <div class="hero-text">
+        <h2>تعلّم الطباعة العربية بلمسة عشرة أصابع</h2>
+        <p>ابدأ من صف الارتكاز، ثم انتقل إلى الصفوف العلوية والسفلية، فالكلمات، فالجمل، وأخيرًا اختبار السرعة الكامل. تُحفظ أفضل نتائجك تلقائيًا على هذا الجهاز.</p>
+      </div>
+    </div>
+    <div class="levels-grid" id="levelsGrid"></div>
+    <div class="divider">۞</div>
+    <footer>اضغط على أي مستوى للبدء — استخدم لوحة المفاتيح الإنجليزية الفعلية؛ سيقوم البرنامج بترجمتها إلى العربية</footer>
+  </div>
+
+  <!-- PRACTICE VIEW -->
+  <div class="view" id="view-practice">
+    <div class="practice-bar">
+      <button class="back-btn" id="backBtn">→ عودة إلى المستويات</button>
+      <div class="lesson-title" id="lessonTitle"></div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><b id="mWpm">0</b><span>كلمة/دقيقة</span></div>
+      <div class="metric"><b id="mAcc">100%</b><span>الدقة</span></div>
+      <div class="metric"><b id="mErr">0</b><span>الأخطاء</span></div>
+      <div class="metric"><b id="mTime">0:00</b><span>الوقت</span></div>
+    </div>
+
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="finger-hint" id="fingerHint"></div>
+
+    <div class="text-display" id="textDisplay" tabindex="0"></div>
+    <input class="hidden-input" id="hiddenInput" autocomplete="off" autocapitalize="off" spellcheck="false">
+
+    <div class="keyboard" id="keyboard"></div>
+    <div class="finger-legend">
+      <div class="item"><span class="dot" style="background:#c8992a"></span>الخنصر</div>
+      <div class="item"><span class="dot" style="background:#a1442a"></span>البنصر</div>
+      <div class="item"><span class="dot" style="background:#5f8f78"></span>الوسطى</div>
+      <div class="item"><span class="dot" style="background:#4a90a4"></span>السبابة</div>
+    </div>
+    <div class="hand-tip" id="handTip">انقر على النص أعلاه واكتب مباشرة — لا حاجة لتفعيل لغة عربية في نظامك</div>
+  </div>
+
+  <!-- RESULTS VIEW -->
+  <div class="view" id="view-results">
+    <div class="results">
+      <div class="glyph" id="resultGlyph">✦</div>
+      <h2 id="resultTitle">أحسنت!</h2>
+      <div class="result-grid">
+        <div class="metric"><b id="rWpm">0</b><span>كلمة/دقيقة</span></div>
+        <div class="metric"><b id="rAcc">0%</b><span>الدقة</span></div>
+        <div class="metric"><b id="rErr">0</b><span>الأخطاء</span></div>
+        <div class="metric"><b id="rBest">0</b><span>أفضل نتيجة</span></div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="retryBtn">إعادة المحاولة</button>
+        <button class="btn primary" id="nextBtn">الدرس التالي ←</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============ ARABIC KEYBOARD MAP (Windows Arabic-101 layout) ============ */
+const KEYMAP = {
+  '`':'ذ','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩','0':'٠','-':'-','=':'=',
+  q:'ض', w:'ص', e:'ث', r:'ق', t:'ف', y:'غ', u:'ع', i:'ه', o:'خ', p:'ح', '[':'ج', ']':'د',
+  a:'ش', s:'س', d:'ي', f:'ب', g:'ل', h:'ا', j:'ت', k:'ن', l:'م', ';':'ك', "'":'ط',
+  z:'ئ', x:'ء', c:'ؤ', v:'ر', b:'لا', n:'ى', m:'ة', ',':'و', '.':'ز', '/':'ظ',
+  ' ':' '
+};
+// reverse map arabic char -> physical key (for keyboard highlighting; first match wins)
+const REVMAP = {};
+Object.entries(KEYMAP).forEach(([k,v])=>{ if(!(v in REVMAP)) REVMAP[v]=k; });
+
+const FINGER = {
+  '`':'pinky','1':'pinky','2':'ring','3':'middle','4':'index','5':'index',
+  '6':'index','7':'index','8':'middle','9':'ring','0':'pinky','-':'pinky','=':'pinky',
+  q:'pinky', w:'ring', e:'middle', r:'index', t:'index', y:'index', u:'index', i:'middle', o:'ring', p:'pinky', '[':'pinky', ']':'pinky',
+  a:'pinky', s:'ring', d:'middle', f:'index', g:'index', h:'index', j:'index', k:'middle', l:'ring', ';':'pinky', "'":'pinky',
+  z:'pinky', x:'ring', c:'middle', v:'index', b:'index', n:'index', m:'index', ',':'middle', '.':'ring', '/':'pinky'
+};
+
+const ROWS = [
+  ['`','1','2','3','4','5','6','7','8','9','0','-','='],
+  ['q','w','e','r','t','y','u','i','o','p','[',']'],
+  ['a','s','d','f','g','h','j','k','l',';',"'"],
+  ['z','x','c','v','b','n','m',',','.','/']
+];
+
+/* ============ LESSON DATA ============ */
+const LEVELS = [
+  {
+    id:'idx-home', glyph:'ب', name:'السبّابتان', keys:'ب ت',
+    sub:'مفتاح F للسبابة اليسرى، ومفتاح J للسبابة اليمنى',
+    hint:'استخدم السبابة اليسرى على F والسبابة اليمنى على J فقط',
+    lessons:[
+      'ببب ببب ببت تبب بتب تبت بب تت',
+      'بت تب بب تت بتب تبت بتت تبب تبتب بتتب'
+    ]
+  },
+  {
+    id:'mid-home', glyph:'ي', name:'الوسطى', keys:'ي ن',
+    sub:'مفتاح D للوسطى اليسرى، ومفتاح K للوسطى اليمنى',
+    hint:'استخدم إصبع الوسطى اليسرى على D والوسطى اليمنى على K',
+    lessons:[
+      'ييي ننن يني نيي ينين نيني',
+      'بيت نبي تين ينت بنت تبني نبتت بيني'
+    ]
+  },
+  {
+    id:'ring-home', glyph:'س', name:'البنصر', keys:'س م',
+    sub:'مفتاح S للبنصر الأيسر، ومفتاح L للبنصر الأيمن',
+    hint:'استخدم إصبع البنصر الأيسر على S والبنصر الأيمن على L',
+    lessons:[
+      'سسس ممم سمس مسم سمسم مسمس',
+      'مس تسم سمت مست بسم تسمي مسبت سمين نسمت'
+    ]
+  },
+  {
+    id:'pinky-home', glyph:'ش', name:'الخنصر', keys:'ش ك',
+    sub:"مفتاح A للخنصر الأيسر، ومفتاح ; للخنصر الأيمن",
+    hint:"استخدم إصبع الخنصر الأيسر على A والخنصر الأيمن على ;",
+    lessons:[
+      'ششش ككك شكش كشك ششكك ككشش',
+      'شكت كشت شكم مكش تشك كتش شمس كشمت'
+    ]
+  },
+  {
+    id:'home-full', glyph:'ا', name:'صف الارتكاز كاملًا', keys:'ش س ي ب ل ا ت ن م ك ط',
+    sub:"أضف G و H (سبابتان ممدودتان) و ' (خنصر أيمن ممدود) وادمج الصف بالكامل",
+    hint:"أضف امتداد السبابتين على G و H، وامتداد الخنصر الأيمن على '",
+    lessons:[
+      'للل ااا ططط لا نال طال بلا كلا سلا تلا',
+      'كتاب طالب سالم كامل بستان لبنان',
+      'بنت الطالب سلمت الكتاب لمعلمها'
+    ]
+  },
+  {
+    id:'top-idx-mid', glyph:'ق', name:'العلوي: سبابة ووسطى', keys:'ق ع ث ه',
+    sub:'R و U بالسبابتين، E و I بالوسطى',
+    hint:'ارفع أصابعك قليلًا: R/U بالسبابة، E/I بالوسطى، مع إبقاء بقية الأصابع في مكانها',
+    lessons:[
+      'ققق ععع ثثث ههه قع عق ثه هث',
+      'قهر عثر هقع ثقف عهق هرق',
+      'عقل فهق رقعة هقيثة'
+    ]
+  },
+  {
+    id:'top-ring-pinky', glyph:'ص', name:'العلوي: بنصر وخنصر', keys:'ص خ ض ح',
+    sub:'W و O بالبنصر، Q و P بالخنصر',
+    hint:'استخدم البنصر لـ W/O والخنصر لـ Q/P مع بقاء اليد ثابتة',
+    lessons:[
+      'صصص خخخ ضضض ححح صخ خص ضح حض',
+      'ضص صث ثق قف فغ غع عه هخ خح',
+      'حقيقة فقير غرفة صحيح ضعيف عقل'
+    ]
+  },
+  {
+    id:'top-stretch', glyph:'ف', name:'العلوي: امتداد السبابتين', keys:'ف غ',
+    sub:'T و Y هما أبعد مفتاحين تصلهما السبابتان في الصف العلوي',
+    hint:'مدّ السبابة اليسرى إلى T والسبابة اليمنى إلى Y ثم أعدها لمكانها',
+    lessons:[
+      'ففف غغغ فغ غف فغفغ غففغ',
+      'فتح الحقيبة قصة جميلة صعبة الفهم غرفة فارغة'
+    ]
+  },
+  {
+    id:'bottom-idx-mid', glyph:'ر', name:'السفلي: سبابة ووسطى', keys:'ر ة ؤ و',
+    sub:'V و M بالسبابتين (مع لا على B)، C و , بالوسطى',
+    hint:'استخدم السبابة لـ V/M/B والوسطى لـ C/,',
+    lessons:[
+      'ررر ةةة ؤؤؤ ووو رة ةر ؤو وؤ',
+      'رأى وردة مسؤول رواية زور',
+      'لا نال لام كلا بلا'
+    ]
+  },
+  {
+    id:'bottom-ring-pinky', glyph:'ء', name:'السفلي: بنصر وخنصر', keys:'ء ز ئ ظ',
+    sub:'X و . بالبنصر، Z و / بالخنصر',
+    hint:"استخدم البنصر لـ X/. والخنصر لـ Z و /",
+    lessons:[
+      'ءءء ززز ئئئ ظظظ ءز زء ئظ ظئ',
+      'ئء ءؤ ؤر رى ىة ةو وز زظ',
+      'زار رجل الوزارة وراءه'
+    ]
+  },
+  {
+    id:'words', glyph:'ك', name:'كلمات شائعة', keys:'',
+    sub:'مزج جميع الحروف في كلمات عربية متداولة',
+    hint:'حافظ على أصابعك فوق صف الارتكاز وارجع إليه بعد كل ضغطة',
+    lessons:[
+      'كتاب قلم مدرسة طالب معلم درس',
+      'بيت شجرة سيارة طريق مدينة نهر',
+      'صباح مساء يوم ليلة شهر سنة',
+      'عائلة أب أم أخ أخت جد جدة'
+    ]
+  },
+  {
+    id:'sentences', glyph:'ج', name:'جمل كاملة', keys:'',
+    sub:'انتقل إلى كتابة جمل مفيدة ومترابطة',
+    hint:'اكتب بإيقاع ثابت دون النظر إلى لوحة المفاتيح',
+    lessons:[
+      'ذهب الطالب إلى المدرسة في الصباح الباكر',
+      'القراءة غذاء العقل والمعرفة نور الحياة',
+      'من جدّ وجد ومن زرع حصد الخير الوفير',
+      'العلم نور والجهل ظلام يهدي أهله إلى الحيرة'
+    ]
+  },
+  {
+    id:'test', glyph:'✦', name:'اختبار السرعة', keys:'',
+    sub:'فقرة كاملة لقياس سرعتك ودقتك النهائية',
+    hint:'اكتب الفقرة كاملة بأقصى سرعة ودقة ممكنتين',
+    lessons:[
+      'اللغة العربية من أقدم اللغات وأكثرها ثراءً بالمفردات والتراكيب، وهي لغة القرآن الكريم ولغة رسمية في أكثر من عشرين دولة. تعلّم الطباعة بها بطلاقة يفتح أبوابًا واسعة للتواصل والإبداع والعمل في مختلف المجالات، ويجعل الكتابة أسرع وأكثر دقة في كل مهمة يومية.'
+    ]
+  }
+];
+
+/* ============ STATE ============ */
+let currentLevel = null, currentLessonIndex = 0;
+let targetText = '', typedChars = [], startTime = null, timerInterval = null;
+let errorCount = 0, totalKeystrokes = 0;
+let bestScores = {}; // levelId -> {wpm, acc}
+
+/* ============ STORAGE ============ */
+async function loadBest(){
+  try{
+    const res = await window.storage.get('arabic-typing-best', false);
+    bestScores = res ? JSON.parse(res.value) : {};
+  }catch(e){ bestScores = {}; }
+}
+async function saveBest(){
+  try{ await window.storage.set('arabic-typing-best', JSON.stringify(bestScores), false); }catch(e){}
+}
+async function bumpSession(minutes){
+  try{
+    const res = await window.storage.get('arabic-typing-session', false);
+    let data = res ? JSON.parse(res.value) : {date:'', minutes:0};
+    const today = new Date().toISOString().slice(0,10);
+    if(data.date !== today) data = {date:today, minutes:0};
+    data.minutes += minutes;
+    await window.storage.set('arabic-typing-session', JSON.stringify(data), false);
+    document.getElementById('sessionPill').textContent = `جلسة اليوم: ${Math.round(data.minutes)} دقيقة`;
+  }catch(e){}
+}
+
+/* ============ VIEWS ============ */
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ============ RENDER HOME ============ */
+function renderHome(){
+  const grid = document.getElementById('levelsGrid');
+  grid.innerHTML = '';
+  LEVELS.forEach((lvl, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'level-card';
+    const best = bestScores[lvl.id];
+    card.innerHTML = `
+      ${best ? `<div class="level-best">أفضل: ${best.wpm} ك/د</div>` : ''}
+      <div class="level-top">
+        <div class="level-glyph">${lvl.glyph}</div>
+        <div class="level-name">${lvl.name}</div>
+      </div>
+      <div class="level-sub">${lvl.sub}</div>
+      <div class="level-keys">${lvl.keys}</div>
+    `;
+    card.addEventListener('click', ()=> startLevel(idx));
+    grid.appendChild(card);
+  });
+}
+
+/* ============ KEYBOARD RENDER ============ */
+function renderKeyboard(){
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  ROWS.forEach(row=>{
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'kb-row';
+    row.forEach(k=>{
+      const keyDiv = document.createElement('div');
+      keyDiv.className = 'key';
+      keyDiv.dataset.key = k;
+      keyDiv.dataset.finger = FINGER[k] || '';
+      keyDiv.innerHTML = `${KEYMAP[k]||''}<small>${k}</small>`;
+      rowDiv.appendChild(keyDiv);
+    });
+    kb.appendChild(rowDiv);
+  });
+  const spaceRow = document.createElement('div');
+  spaceRow.className = 'kb-row';
+  const spaceKey = document.createElement('div');
+  spaceKey.className = 'key wide';
+  spaceKey.dataset.key = ' ';
+  spaceKey.dataset.finger = 'thumb';
+  spaceKey.innerHTML = 'مسافة';
+  spaceRow.appendChild(spaceKey);
+  kb.appendChild(spaceRow);
+}
+function highlightKey(char){
+  document.querySelectorAll('.key').forEach(k=>k.classList.remove('next'));
+  const physKey = REVMAP[char];
+  if(physKey !== undefined){
+    const el = document.querySelector(`.key[data-key="${CSS.escape(physKey)}"]`);
+    if(el) el.classList.add('next');
+  }
+}
+function flashKeyPress(key){
+  const el = document.querySelector(`.key[data-key="${CSS.escape(key)}"]`);
+  if(el){
+    el.classList.add('pressed');
+    setTimeout(()=>el.classList.remove('pressed'), 90);
+  }
+}
+
+/* ============ LESSON ENGINE ============ */
+function startLevel(idx){
+  currentLevel = LEVELS[idx];
+  currentLessonIndex = 0;
+  loadLesson();
+  showView('view-practice');
+  document.getElementById('hiddenInput').focus();
+}
+function loadLesson(){
+  const lvl = currentLevel;
+  targetText = lvl.lessons[currentLessonIndex];
+  typedChars = new Array(targetText.length).fill(null); // null pending, true correct, false wrong
+  startTime = null; errorCount = 0; totalKeystrokes = 0;
+  document.getElementById('lessonTitle').textContent = `${lvl.name} — تمرين ${currentLessonIndex+1} من ${lvl.lessons.length}`;
+  document.getElementById('fingerHint').textContent = lvl.hint || '';
+  document.getElementById('fingerHint').style.display = lvl.hint ? 'block' : 'none';
+  document.getElementById('mWpm').textContent = '0';
+  document.getElementById('mAcc').textContent = '100%';
+  document.getElementById('mErr').textContent = '0';
+  document.getElementById('mTime').textContent = '0:00';
+  document.getElementById('progressFill').style.width = '0%';
+  clearInterval(timerInterval);
+  renderText();
+  highlightKey(targetText[0]);
+  document.getElementById('hiddenInput').value = '';
+}
+function renderText(){
+  const disp = document.getElementById('textDisplay');
+  disp.innerHTML = targetText.split('').map((c,i)=>{
+    let cls = 'pending';
+    if(typedChars[i] === true) cls='correct';
+    else if(typedChars[i] === false) cls='wrong';
+    if(i === firstPendingIndex()) cls += ' current';
+    return `<span class="ch ${cls}">${c===' '?'&nbsp;':c}</span>`;
+  }).join('');
+}
+function firstPendingIndex(){
+  for(let i=0;i<typedChars.length;i++) if(typedChars[i]===null) return i;
+  return targedTextSafeLen();
+}
+function targedTextSafeLen(){ return targetText.length; }
+
+function updateMetrics(){
+  const elapsed = startTime ? (Date.now()-startTime)/1000 : 0;
+  const correctCount = typedChars.filter(c=>c===true).length;
+  const minutes = elapsed/60;
+  const wpm = minutes>0 ? Math.round((correctCount/5)/minutes) : 0;
+  const acc = totalKeystrokes>0 ? Math.round(((totalKeystrokes-errorCount)/totalKeystrokes)*100) : 100;
+  document.getElementById('mWpm').textContent = wpm;
+  document.getElementById('mAcc').textContent = acc+'%';
+  document.getElementById('mErr').textContent = errorCount;
+  const mm = Math.floor(elapsed/60), ss = Math.floor(elapsed%60);
+  document.getElementById('mTime').textContent = `${mm}:${ss.toString().padStart(2,'0')}`;
+  const doneCount = typedChars.filter(c=>c!==null).length;
+  document.getElementById('progressFill').style.width = `${(doneCount/targetText.length)*100}%`;
+  return {wpm, acc};
+}
+
+function handleTypedChar(inputChar){
+  const idx = firstPendingIndex();
+  if(idx >= targetText.length) return;
+  if(!startTime){
+    startTime = Date.now();
+    timerInterval = setInterval(updateMetrics, 300);
+  }
+  totalKeystrokes++;
+  const expected = targetText[idx];
+  if(inputChar === expected){
+    typedChars[idx] = true;
+  }else{
+    typedChars[idx] = false;
+    errorCount++;
+  }
+  renderText();
+  const metrics = updateMetrics();
+  const nextIdx = firstPendingIndex();
+  if(nextIdx < targetText.length){
+    highlightKey(targetText[nextIdx]);
+  }else{
+    finishLesson(metrics);
+  }
+}
+
+function finishLesson(metrics){
+  clearInterval(timerInterval);
+  const lvlId = currentLevel.id;
+  const prevBest = bestScores[lvlId];
+  const isNewBest = !prevBest || metrics.wpm > prevBest.wpm;
+  if(isNewBest){
+    bestScores[lvlId] = {wpm: metrics.wpm, acc: metrics.acc};
+    saveBest();
+  }
+  const elapsedMinutes = startTime ? (Date.now()-startTime)/60000 : 0;
+  bumpSession(elapsedMinutes);
+
+  document.getElementById('resultGlyph').textContent = isNewBest ? '✦' : '۝';
+  document.getElementById('resultTitle').textContent = isNewBest ? 'رقم قياسي جديد! أحسنت' : 'أحسنت! تمرين مكتمل';
+  document.getElementById('rWpm').textContent = metrics.wpm;
+  document.getElementById('rAcc').textContent = metrics.acc+'%';
+  document.getElementById('rErr').textContent = errorCount;
+  document.getElementById('rBest').textContent = bestScores[lvlId].wpm;
+
+  const hasNext = currentLessonIndex < currentLevel.lessons.length - 1;
+  document.getElementById('nextBtn').style.display = hasNext ? 'inline-block' : 'none';
+  document.getElementById('nextBtn').textContent = hasNext ? 'الدرس التالي ←' : '';
+  showView('view-results');
+}
+
+/* ============ INPUT HANDLING ============ */
+const hiddenInput = document.getElementById('hiddenInput');
+document.getElementById('textDisplay').addEventListener('click', ()=> hiddenInput.focus());
+document.getElementById('view-practice').addEventListener('click', ()=> hiddenInput.focus());
+
+hiddenInput.addEventListener('keydown', (e)=>{
+  if(e.key === 'Backspace'){
+    e.preventDefault();
+    const idx = firstPendingIndex()-1;
+    if(idx>=0 && typedChars[idx]!==null){
+      typedChars[idx] = null;
+      renderText();
+      highlightKey(targetText[idx]);
+      updateMetrics();
+    }
+    return;
+  }
+  let raw = e.key;
+  if(raw.length !== 1) return; // ignore control keys
+  const lower = raw.toLowerCase();
+  let arabicChar = KEYMAP[lower];
+  if(arabicChar === undefined) return;
+  e.preventDefault();
+  flashKeyPress(lower);
+  // handle multi-char mapping (لا) as a unit isn't trivial char-by-char; treat as single expected sequence
+  if(arabicChar.length > 1){
+    // consume as many target chars as match the ligature sequence
+    let idx = firstPendingIndex();
+    let seq = targetText.slice(idx, idx+arabicChar.length);
+    if(seq === arabicChar){
+      for(let i=0;i<arabicChar.length;i++){ typedChars[idx+i] = true; }
+      totalKeystrokes++;
+    }else{
+      typedChars[idx] = false;
+      errorCount++; totalKeystrokes++;
+    }
+    if(!startTime){ startTime = Date.now(); timerInterval=setInterval(updateMetrics,300); }
+    renderText();
+    const metrics = updateMetrics();
+    const nextIdx = firstPendingIndex();
+    if(nextIdx < targetText.length) highlightKey(targetText[nextIdx]);
+    else finishLesson(metrics);
+  }else{
+    handleTypedChar(arabicChar);
+  }
+});
+
+/* ============ NAV BUTTONS ============ */
+document.getElementById('backBtn').addEventListener('click', ()=>{
+  clearInterval(timerInterval);
+  renderHome();
+  showView('view-home');
+});
+document.getElementById('retryBtn').addEventListener('click', ()=>{
+  loadLesson();
+  showView('view-practice');
+  hiddenInput.focus();
+});
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  if(currentLessonIndex < currentLevel.lessons.length-1){
+    currentLessonIndex++;
+    loadLesson();
+    showView('view-practice');
+    hiddenInput.focus();
+  }
+});
+
+/* ============ INIT ============ */
+(async function init(){
+  await loadBest();
+  renderKeyboard();
+  renderHome();
+  try{
+    const res = await window.storage.get('arabic-typing-session', false);
+    if(res){
+      const data = JSON.parse(res.value);
+      const today = new Date().toISOString().slice(0,10);
+      if(data.date === today) document.getElementById('sessionPill').textContent = `جلسة اليوم: ${Math.round(data.minutes)} دقيقة`;
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
